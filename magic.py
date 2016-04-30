@@ -7,10 +7,12 @@ import sys
 ListIP = "select ip, count(1) from `dns` group by 1 order by 2"
 DataByIP = "SELECT hour, min, SUBSTRING(domain, LOCATE('.', domain) + 1, LENGTH(domain) - LOCATE('.', domain)) from `dns` where ip='%s' group by hour, min, SUBSTRING(domain, LOCATE('.', domain) + 1, LENGTH(domain) - LOCATE('.', domain)) order by hour, min, sec, msec"
 
+#Grab IP addresses pertaining to different time slots.
 DataMorning = "select distinct ip from `new_data_5am_to_8am` where SUBSTRING_INDEX(new_domain, '.', -1) not in ('edu') and domain not regexp 'montana|spam|aka|akamai' and hour = 6"
 DataEvening = "select distinct ip from `new_data_5pm_to_5am` where SUBSTRING_INDEX(new_domain, '.', -1) not in ('edu') and domain not regexp 'montana|spam|aka|akamai' and hour = 21"
 DataWorking = "select distinct ip from `new_data_8am_to_5pm` where SUBSTRING_INDEX(new_domain, '.', -1) not in ('edu') and domain not regexp 'montana|spam|aka|akamai' and hour = 12"
 
+#Grab visited domain names by each IP address
 DataMorningByIP = "SELECT hour, min, new_domain from `new_data_5am_to_8am` where ip='%s' and SUBSTRING_INDEX(new_domain, '.', -1) not in ('edu') and domain not regexp 'montana|spam|aka|akamai' and hour = 6 group by min, new_domain order by min, sec, msec"
 DataEveningByIP = "SELECT hour, min, new_domain from `new_data_5pm_to_5am` where ip='%s' and SUBSTRING_INDEX(new_domain, '.', -1) not in ('edu') and domain not regexp 'montana|spam|aka|akamai' and hour = 21 group by min, new_domain order by min, sec, msec"
 DataWorkingByIP = "SELECT hour, min, new_domain from `new_data_8am_to_5pm` where ip='%s' and SUBSTRING_INDEX(new_domain, '.', -1) not in ('edu') and domain not regexp 'montana|spam|aka|akamai' and hour = 12 group by min, new_domain order by min, sec, msec"
@@ -28,10 +30,10 @@ def main(daterbase):
     cnx = mariadb.connect()
     try:
         cnx = mariadb.connect(
-            user='', 
-            password='', 
-            host='', 
-            database='')
+            user='',  #username to connect with the SQL database
+            password='',  #password to connect with the SQL database
+            host='',  #Hostname to connect with the SQL database
+            database='') #Database name to connect with the SQL database
     except mariadb.Error as error:
         print("Error: {}".format(error))
 
@@ -40,11 +42,11 @@ def main(daterbase):
 
     print(daterbase)
 
-    if daterbase == 'DataMorning': 
+    if daterbase == 'DataMorning': #Database containing data from morning hours (5AM to 8AM).
         ans = RunQuery(cnx, DataMorning)
-    elif daterbase == 'DataEvening': 
+    elif daterbase == 'DataEvening':  #Database containing data from evening hours (8AM to 5PM).
         ans = RunQuery(cnx, DataEvening)
-    elif daterbase == 'DataWorking': 
+    elif daterbase == 'DataWorking': #Database containing data from afternoon hours (5PM to 5AM).
         ans = RunQuery(cnx, DataWorking)
     else: 
         ans = RunQuery(cnx, ListIP)
