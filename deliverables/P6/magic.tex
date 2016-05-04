@@ -1,0 +1,32 @@
+\begin{algorithm}[]
+\SetStartEndCondition{ }{}{}%
+\SetKwProg{Fn}{def}{\string:}{}
+\SetKwFunction{Range}{range}%%
+\SetKw{KwTo}{in}
+\SetKwFor{For}{for}{\string:}{}%
+\SetKwIF{If}{ElseIf}{Else}{if}{:}{elif}{else:}{}%
+\SetKwFor{While}{while}{:}{fintq}%
+\newcommand{\forcond}{$i$ \KwTo\Range{$n$}}
+\AlgoDontDisplayBlockMarkers\SetAlgoNoEnd\SetAlgoNoLine%
+\KwData{$(T,S)$ where $T$ is a time and $S$ is tuple size.}
+\KwResult{$H = (K,V)$ where $H$ is a HashMap with keys $K$ as a sequence (seq) of domains and values $V$ as the number of times that sequence occurs}
+
+$data = DataAtTime(T)$\\
+$IPList = [x[0]~for~x~in~data]$
+
+\For{$ip \in IPList$}{
+    $Domains = DomainsWithIP(ip)$
+    
+    \For{$i \in$ \Range{$0,len(Domains)-S$}}{
+        $seq = (domain_i, domain_{i+1},..., domain_S)$
+        
+        \If{$seq \in H$}{
+            $H[seq] = H[seq] + 1$
+        }
+        \Else{
+            $H[seq] = 1$
+        }
+    }
+}
+\caption{\sol\label{alg:MAGIC}}
+\end{algorithm}
